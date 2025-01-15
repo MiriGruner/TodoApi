@@ -60,7 +60,7 @@ app.UseAuthorization();  // Enable Authorization Middleware
 // Route to Get All Tasks
 
 
-app.MapGet("/", /*[Microsoft.AspNetCore.Authorization.Authorize]*/ async (ToDoDbContext dbContext) =>
+app.MapGet("/", async (ToDoDbContext dbContext) =>
 {
     // Fetch all items from the database
     var tasks = await dbContext.Items.ToListAsync();
@@ -76,7 +76,7 @@ app.MapGet("/", /*[Microsoft.AspNetCore.Authorization.Authorize]*/ async (ToDoDb
 });
 
 // Route to Add New Task
-app.MapPost("/", [Microsoft.AspNetCore.Authorization.Authorize] async (ToDoDbContext dbContext, Item newItem) =>
+app.MapPost("/", async (ToDoDbContext dbContext, Item newItem) =>
 {
     dbContext.Items.Add(newItem);
     await dbContext.SaveChangesAsync();
@@ -84,7 +84,7 @@ app.MapPost("/", [Microsoft.AspNetCore.Authorization.Authorize] async (ToDoDbCon
 });
 
 // Route to Update a Task
-app.MapPut("/{id}", [Microsoft.AspNetCore.Authorization.Authorize]async (int id, ToDoDbContext dbContext, Item updatedItem) =>
+app.MapPut("/{id}", async (int id, ToDoDbContext dbContext, Item updatedItem) =>
 {
     var item = await dbContext.Items.FindAsync(id);
     if (item == null)
@@ -102,7 +102,7 @@ app.MapPut("/{id}", [Microsoft.AspNetCore.Authorization.Authorize]async (int id,
 });
 
 // Route to Delete a Task
-app.MapDelete("/{id}", [Microsoft.AspNetCore.Authorization.Authorize]   async (int id, ToDoDbContext dbContext) =>
+app.MapDelete("/{id}",   async (int id, ToDoDbContext dbContext) =>
 {
     var item = await dbContext.Items.FindAsync(id);
     if (item == null)
