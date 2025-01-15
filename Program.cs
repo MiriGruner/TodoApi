@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using TodoApi;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<ToDoDbContext>(options =>
@@ -16,6 +15,10 @@ builder.Services.AddCors(options =>
                .AllowAnyMethod()
                .AllowAnyHeader();
     });
+});
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Todo API", Version = "v1" });
 });
 
 

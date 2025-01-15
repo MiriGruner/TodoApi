@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "7jHAy/FET7eSdVQrBzULW/ZhpH62TGOZpiOYqWZ+jd9nQUOR3Pg3t5xIN+BqsFxgA7YpPSFtOO1OXsoWsfICtQ==",
+  "dgSpecHash": "kRTOjU1Ujti3QTN5nXCyNli6K9lHhLvk/7yhYEputSD+UduDSiESWqTPfe4upepr9wXBwqYogtWG9XiWImL+xg==",
   "success": true,
   "projectFilePath": "D:\\לימודים-הנדסאים\\שנה ג\\פרקטיקוד\\TodoApi\\TodoApi.csproj",
   "expectedPackageFiles": [
@@ -29,6 +29,7 @@
     "C:\\Users\\The user\\.nuget\\packages\\microsoft.extensions.primitives\\7.0.0\\microsoft.extensions.primitives.7.0.0.nupkg.sha512",
     "C:\\Users\\The user\\.nuget\\packages\\microsoft.net.http.headers\\2.2.0\\microsoft.net.http.headers.2.2.0.nupkg.sha512",
     "C:\\Users\\The user\\.nuget\\packages\\microsoft.openapi\\1.6.22\\microsoft.openapi.1.6.22.nupkg.sha512",
+    "C:\\Users\\The user\\.nuget\\packages\\microsoft.visualstudio.azure.containers.tools.targets\\1.17.0\\microsoft.visualstudio.azure.containers.tools.targets.1.17.0.nupkg.sha512",
     "C:\\Users\\The user\\.nuget\\packages\\mono.texttemplating\\2.2.1\\mono.texttemplating.2.2.1.nupkg.sha512",
     "C:\\Users\\The user\\.nuget\\packages\\mysqlconnector\\2.2.5\\mysqlconnector.2.2.5.nupkg.sha512",
     "C:\\Users\\The user\\.nuget\\packages\\pomelo.entityframeworkcore.mysql\\7.0.0\\pomelo.entityframeworkcore.mysql.7.0.0.nupkg.sha512",
