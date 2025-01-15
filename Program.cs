@@ -48,8 +48,6 @@ catch (Exception ex)
 var app = builder.Build();
 
 app.UseCors();
-app.UseAuthentication(); // Enable JWT Authentication
-app.UseAuthorization();  // Enable Authorization Middleware
 
 //if (app.Environment.IsDevelopment())
 //{
