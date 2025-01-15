@@ -1,61 +1,118 @@
+using System.Text;
 using Microsoft.EntityFrameworkCore;
+using TodoApi;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddDbContext<ToDoDbContext>(options =>
-    options.UseMySql(
-        builder.Configuration.GetConnectionString("DefaultConnection"),
-        new MySqlServerVersion(new Version(8, 0, 32))
-    ));
-// הוספת שירותי CORS
+
+//var connectionString = "Server=bujkixbbtsdssxnmdyuu-mysql.services.clever-cloud.com;User=uftyv7t4ctoqb2rx;Password=tC6pwbqLIWAI1c7MSb88;Database=bujkixbbtsdssxnmdyuu;";
+// Add services to the container
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
+// Add CORS service
 builder.Services.AddCors(options =>
 {
-    options.AddDefaultPolicy(builder =>
+    options.AddDefaultPolicy(policy =>
     {
-        builder.AllowAnyOrigin()
-               .AllowAnyMethod()
-               .AllowAnyHeader();
+        policy.AllowAnyOrigin()
+              .AllowAnyMethod()
+              .AllowAnyHeader();
     });
 });
-builder.Services.AddSwaggerGen(c =>
-{
-    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Todo API", Version = "v1" });
-});
 
+// Get the connection string from app configuration
+
+var connectionString = Environment.GetEnvironmentVariable("ToDoDB");
+
+
+
+if (string.IsNullOrEmpty(connectionString))
+{
+    Console.WriteLine("Connection string is missing!");
+    return;
+}
+try
+{
+
+builder.Services.AddDbContext<ToDoDbContext>(options =>
+    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
+
+
+}
+catch (Exception ex)
+{
+    Console.WriteLine($"שגיאה: {ex.Message}");
+}
 
 
 var app = builder.Build();
 
-// הפעלת CORS
 app.UseCors();
+app.UseAuthentication(); // Enable JWT Authentication
+app.UseAuthorization();  // Enable Authorization Middleware
 
-// הגדרת ה-Routes
-app.MapGet("/", () =>  "dddd");
-app.MapGet("/items", async (ToDoDbContext db) => await db.Items.ToListAsync());
-app.MapPost("/items", async (ToDoDbContext db, Item item) =>
+//if (app.Environment.IsDevelopment())
+//{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+//}
+
+// Route to Get All Tasks
+
+
+app.MapGet("/", /*[Microsoft.AspNetCore.Authorization.Authorize]*/ async (ToDoDbContext dbContext) =>
 {
-    db.Items.Add(item);
-    await db.SaveChangesAsync();
-    return Results.Created($"/items/{item.Id}", item);
+    // Fetch all items from the database
+    var tasks = await dbContext.Items.ToListAsync();
+
+    // Check if the list is empty
+    if (tasks == null || tasks.Count == 0)
+    {
+        return Results.NotFound("No items found in the database.");
+    }
+
+    // Return the tasks as JSON
+    return Results.Json(tasks);
 });
-app.MapPut("/items/{id}", async (ToDoDbContext db, int id, Item updatedItem) =>
+
+// Route to Add New Task
+app.MapPost("/", [Microsoft.AspNetCore.Authorization.Authorize] async (ToDoDbContext dbContext, Item newItem) =>
 {
-    var item = await db.Items.FindAsync(id);
-    if (item == null) return Results.NotFound();
-
-    item.Name = updatedItem.Name;
-    item.IsComplete = updatedItem.IsComplete;
-
-    await db.SaveChangesAsync();
-    return Results.NoContent();
+    dbContext.Items.Add(newItem);
+    await dbContext.SaveChangesAsync();
+    return Results.Created($"/{newItem.Id}", newItem);
 });
-app.MapDelete("/items/{id}", async (ToDoDbContext db, int id) =>
-{
-    var item = await db.Items.FindAsync(id);
-    if (item == null) return Results.NotFound();
 
-    db.Items.Remove(item);
-    await db.SaveChangesAsync();
-    return Results.NoContent();
+// Route to Update a Task
+app.MapPut("/{id}", [Microsoft.AspNetCore.Authorization.Authorize]async (int id, ToDoDbContext dbContext, Item updatedItem) =>
+{
+    var item = await dbContext.Items.FindAsync(id);
+    if (item == null)
+    {
+        return Results.NotFound("Item not found.");
+    }
+
+    if (!string.IsNullOrEmpty(updatedItem.Name))
+        item.Name = updatedItem.Name;
+        item.IsComplete = updatedItem.IsComplete;
+        await dbContext.SaveChangesAsync();
+  
+    return Results.Json(item);
+    
+});
+
+// Route to Delete a Task
+app.MapDelete("/{id}", [Microsoft.AspNetCore.Authorization.Authorize]   async (int id, ToDoDbContext dbContext) =>
+{
+    var item = await dbContext.Items.FindAsync(id);
+    if (item == null)
+    {
+        return Results.NotFound("Item not found.");
+    }
+
+    dbContext.Items.Remove(item);
+    await dbContext.SaveChangesAsync();
+    return Results.Ok("Item deleted successfully.");
 });
 
 app.Run();
